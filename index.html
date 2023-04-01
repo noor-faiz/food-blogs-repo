@@ -1,29 +1,150 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Food Vlogs</title>
-    <link rel="stylesheet" href="style.css">
+	<title>Snake Game</title>
+	<style>
+		canvas {
+			border: 1px solid #000;
+                        background-color: coral;
+		}
+		button {
+			margin: 5px;
+                        background-color: yellow;
+		}
+	</style>
 </head>
 <body>
-    <section class="flexible">
-        <div class="b">
-            <h1><span class="c">Foods</span> which must be avoided to lead a healthy life.</h1>
-            <p>The Foods which are known as Junk food is <b>harmful</b> for our health. These foods must be avoided. These kinds of foods are Fried foods and oily foods. Good health is the need of every one of us to live a healthy life which is only attain by maintaining healthy diet and healthy habits throughout life.
+	<canvas id="canvas" width="400" height="400"></canvas>
 
-                However, in today’s world the custom of eating junk food is increasing day by day and making our future generations unhealthy and diseased.
-                
-                Parents should be very conscious of their children’s eating habits as child doesn’t understand what is healthy or unhealthy for them.
-                
-                They should train their children about eating habits since childhood and make them clear about the difference between healthy and junk foods.</p>
-                <a href="https://www.healthline.com/nutrition/50-super-healthy-foods" class="d">Healty food list</a>
-        </div>
-        <div class="a">
-                    <img src="https://youngmenshealthsite.org/wp-content/uploads/2015/05/happy-teen.jpg"></img>
-        </div>
-    </section>
-    
+	<button id="up">Up</button>
+	<button id="down">Down</button>
+	<button id="left">Left</button>
+	<button id="right">Right</button>
+	<button id="newGame">New Game</button>
+
+	<script>
+		// Set up the canvas and context
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		// Set up game variables
+		var tileSize = 10;
+		var width = canvas.width / tileSize;
+		var height = canvas.height / tileSize;
+
+		// Set up the snake
+		var snake = [
+			{x: 5, y: 5},
+			{x: 4, y: 5},
+			{x: 3, y: 5},
+			{x: 2, y: 5},
+			{x: 1, y: 5}
+		];
+		var direction = "right";
+
+		// Set up the food
+		var food = {x: 10, y: 10};
+
+		// Set up the game loop
+		var gameLoopInterval;
+		function startGame() {
+			gameLoopInterval = setInterval(gameLoop, 100);
+		}
+		startGame();
+
+		function gameLoop() {
+			// Move the snake
+			var head = {x: snake[0].x, y: snake[0].y};
+			switch (direction) {
+				case "up":
+					head.y--;
+					break;
+				case "down":
+					head.y++;
+					break;
+				case "left":
+					head.x--;
+					break;
+				case "right":
+					head.x++;
+					break;
+			}
+			snake.unshift(head);
+			snake.pop();
+
+			// Check for collisions
+			if (head.x < 0 || head.x >= width || head.y < 0 || head.y >= height) {
+				gameOver();
+			}
+			for (var i = 1; i < snake.length; i++) {
+				if (head.x == snake[i].x && head.y == snake[i].y) {
+					gameOver();
+				}
+			}
+			if (head.x == food.x && head.y == food.y) {
+				food.x = Math.floor(Math.random() * width);
+				food.y = Math.floor(Math.random() * height);
+				snake.push(snake[snake.length-1]);
+			}
+
+			// Clear the canvas
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			// Draw the snake
+			for (var i = 0; i < snake.length; i++) {
+				ctx.fillRect(snake[i].x * tileSize, snake[i].y * tileSize, tileSize, tileSize);
+			}
+
+			// Draw the food
+			ctx.fillRect(food.x * tileSize, food.y * tileSize, tileSize, tileSize);
+		}
+
+		// Handle button input
+		document.getElementById("up").addEventListener("click", function() {
+			if (direction != "down") {
+				direction = "up";
+			}
+		});
+		document.getElementById("down").addEventListener("click", function()
+	{
+		if (direction != "up") {
+			direction = "down";
+		}
+	});
+	document.getElementById("left").addEventListener("click", function() {
+		if (direction != "right") {
+			direction = "left";
+		}
+	});
+	document.getElementById("right").addEventListener("click", function() {
+		if (direction != "left") {
+			direction = "right";
+		}
+	});
+	
+	// Handle new game button click
+	document.getElementById("newGame").addEventListener("click", function() {
+		// Stop the game loop and reset the game variables
+		clearInterval(gameLoopInterval);
+		snake = [
+			{x: 5, y: 5},
+			{x: 4, y: 5},
+			{x: 3, y: 5},
+			{x: 2, y: 5},
+			{x: 1, y: 5}
+		];
+		direction = "right";
+		food = {x: 10, y: 10};
+
+		// Start the game loop again
+		startGame();
+	});
+
+	// Handle game over
+	function gameOver() {
+		clearInterval(gameLoopInterval);
+		alert("Game over!");
+	}
+</script>
 </body>
 </html>
